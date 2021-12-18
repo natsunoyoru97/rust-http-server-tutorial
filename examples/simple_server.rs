@@ -5,15 +5,14 @@ use std::thread;
 
 /// 处理已建立的 TCP 连接
 fn handle_tcp_connection(mut stream: TcpStream) {
-    let mut buffer = [0 as u8; 1024];
-    while match stream.read(&mut buffer) {
+    let mut buffer = vec![0 as u8; 16];
+    match stream.read(&mut buffer) {
         Ok(size) => { 
-            stream.write(&buffer[0..size]).expect("Write operation failed!！");
-            true
+            println!("Get message from the client: {:?}, start to response", buffer);
+            stream.write(&buffer[0..size]).expect("Write operation failed!");
         },
         Err(_) => {
             stream.shutdown(Shutdown::Both).expect("Failed to shutdown!");
-            false
         },
     } {}
 }
