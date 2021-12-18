@@ -1,0 +1,7 @@
+[book]
+authors = ["natsunoyoru97"]
+language = "cn"
+multilingual = false
+src = "src"
+title = "用Rust写网络套接字"
+description = "用Rust写一个逻辑简明清晰、方便扩展、便于测试的服务器"
