@@ -25,8 +25,8 @@ fn main() -> std::io::Result<()> {
     let port: u16 = args[2]
                     .clone()
                     .parse()
-                    .expect("端口不合法");
-    println!("IP 地址：{:?} 端口：{:?}", &server_addr, port);
+                    .expect("Illegal port");
+    println!("IP address {:?} port {:?}", &server_addr, port);
 
     let listener = TcpListener::bind((server_addr, port))
                                 .expect("Binding address failed!");
