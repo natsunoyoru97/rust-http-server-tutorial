@@ -5,14 +5,47 @@ use std::thread;
 
 /// 处理已建立的 TCP 连接
 fn handle_tcp_connection(mut stream: TcpStream) {
-    let mut buffer = vec![0 as u8; 16];
-    match stream.read(&mut buffer) {
+    let mut buffer = vec![0 as u8; 512];
+    // peek 不影响缓存，也是推荐方案
+    /*
+    if stream.peek(&mut buffer).expect("Failed to peek") == 0 {
+        return;
+    }
+    */
+    while match stream.read(&mut buffer) {
         Ok(size) => { 
-            println!("Get message from the client: {:?}, start to response", buffer);
-            stream.write(&buffer[0..size]).expect("Write operation failed!");
+            if size == 0 {
+                return;
+            }
+            let msg = String::from_utf8(buffer.clone())
+                                .expect("Error in parsing data from the client");
+            let msg_temp = msg.trim_matches(char::from(0));
+            println!("Get message from the client: {}, start to response"
+                    , msg);
+
+            println!("{:?}", str::to_ascii_lowercase(msg_temp).eq("exit"));
+
+            if str::to_ascii_lowercase(msg_temp).eq("exit") {
+                println!("Already told the client to close connection");
+                return ();
+            }
+            else {
+                stream
+                    .write(&buffer[0..size])
+                    .expect("Write operation failed!");
+                stream
+                    .flush()
+                    .unwrap();
+                println!("Already sent response to the client");
+            }
+
+            true
         },
         Err(_) => {
-            stream.shutdown(Shutdown::Both).expect("Failed to shutdown!");
+            stream.shutdown(Shutdown::Both)
+                  .expect("Failed to shutdown!");
+
+            false
         },
     } {}
 }
@@ -26,7 +59,7 @@ fn main() -> std::io::Result<()> {
                     .clone()
                     .parse()
                     .expect("Illegal port");
-    println!("IP address {:?} port {:?}", &server_addr, port);
+    println!("IP address {} port {}", &server_addr, port);
 
     let listener = TcpListener::bind((server_addr, port))
                                 .expect("Binding address failed!");
@@ -35,9 +68,11 @@ fn main() -> std::io::Result<()> {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                println!("New connection: {}", stream.peer_addr().unwrap());
+                println!("New connection: {}", stream
+                                                .peer_addr()
+                                                .unwrap());
                 thread::spawn(move|| {
-                    handle_tcp_connection(stream)
+                    handle_tcp_connection(stream);
                 });
             },
             Err(e) => {
