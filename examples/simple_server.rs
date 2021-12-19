@@ -46,8 +46,8 @@ fn handle_tcp_connection(mut stream: TcpStream) {
         }
 
         stream
-                        .flush()
-                        .unwrap();
+            .flush()
+            .unwrap();
         println!("{}", String::from_utf8(buffer.clone())
                                     .expect("Error in parsing data from the client"));
     }
