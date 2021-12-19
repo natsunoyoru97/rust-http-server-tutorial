@@ -22,6 +22,12 @@
   cargo run --example <示例代码名称> -- [args..]
 ```
 
+### 目前支持的示例
+
+- simple_client
+
+- simple_server
+
 
 ### 为什么用Rust？
 

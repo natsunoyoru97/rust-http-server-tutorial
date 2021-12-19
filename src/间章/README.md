@@ -8,3 +8,4 @@
 
 - [rust-protobuf](https://github.com/stepancheg/rust-protobuf) - Google Protobuf 的Rust实现
 
+- 用Rust写单独的lib模块
