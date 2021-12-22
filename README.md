@@ -28,7 +28,7 @@
 
 - simple_server
 
-- simple_http_client
+- simple_http_server
 
 
 ### 为什么用Rust？
