@@ -30,6 +30,14 @@
 
 - simple_http_server
 
+### 目前可以参考的性能测试结果
+
+所有性能测试的结果均在``./loadtest_log``文件夹下。
+
+目前只有 MacOS Catalina 下使用 npm 插件 loadtest 进行压力测试的结果。日后还会添加 Linux 平台的测试结果，并完善文档。
+
+- simple_http_server
+
 
 ### 为什么用Rust？
 
