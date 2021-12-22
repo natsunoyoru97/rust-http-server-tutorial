@@ -28,6 +28,8 @@
 
 - simple_server
 
+- simple_http_client
+
 
 ### 为什么用Rust？
 
