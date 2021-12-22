@@ -1,0 +1,26 @@
+[Wed Dec 22 2021 10:16:05 GMT+0000 (Coordinated Universal Time)] INFO Requests: 8000, requests per second: 2602, mean latency: 1884.7 ms
+[Wed Dec 22 2021 10:16:05 GMT+0000 (Coordinated Universal Time)] INFO Errors: 8000, accumulated errors: 8000, 100% of total requests
+[Wed Dec 22 2021 10:16:09 GMT+0000 (Coordinated Universal Time)] INFO Requests: 32000, requests per second: 6517, mean latency: 1282.9 ms
+[Wed Dec 22 2021 10:16:09 GMT+0000 (Coordinated Universal Time)] INFO Errors: 24000, accumulated errors: 32000, 100% of total requests
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO 
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Target URL:          http://127.0.0.1:8080/
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Max time (s):        10
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Concurrency level:   8000
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Agent:               none
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO 
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Completed requests:  53608
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Total errors:        53608
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Total time:          10.000351242999999 s
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Requests per second: 5361
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Mean latency:        1341.7 ms
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO 
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO Percentage of the requests served within a certain time
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO   50%      1263 ms
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO   90%      1610 ms
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO   95%      2117 ms
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO   99%      2317 ms
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO  100%      2349 ms (longest request)
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO 
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO  100%      2349 ms (longest request)
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO 
+[Wed Dec 22 2021 10:16:12 GMT+0000 (Coordinated Universal Time)] INFO    -1:   53608 errors
