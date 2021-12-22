@@ -24,6 +24,8 @@
 
 ### 目前支持的示例
 
+注意：虽然这些示例均可运行，但目前**不保证对异常情况的处理**，还有很多功能没有完善。
+
 - simple_client
 
 - simple_server
@@ -34,7 +36,7 @@
 
 所有性能测试的结果均在``./loadtest_log``文件夹下。
 
-目前只有 MacOS Catalina 下使用 npm 插件 loadtest 进行压力测试的结果。日后还会添加 Linux 平台的测试结果，并完善文档。
+目前只有 Alma Linux 服务器上使用 npm 插件 loadtest 进行压力测试的结果（日后更新具体环境信息）。
 
 - simple_http_server
 
