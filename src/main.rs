@@ -1,47 +1,63 @@
 use std::env;
-use std::io::{
-    Read, Write
-};
-use std::net::{TcpListener, TcpStream};
+use std::error::Error;
+use std::fs;
+use tokio::net::{TcpListener, TcpStream};
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
-/// 处理已经 accept 的 TCP 请求
-pub struct TcpHandler {
+/// 处理已建立的 TCP 连接
+async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
+    let mut message = String::new();
+    BufReader::new(&mut stream).read_line(&mut message).await?;
 
+    // TODO: 封装这边的逻辑，请求不同的内容返回不同的东西
+    let contents = fs::read_to_string("./public/index.html")
+                        .unwrap(); // TODO: Handle the error
+    let response = format!(
+        "HTTP/1.1 200 OK\r\n\
+        Server: Rust\r\n\
+        Content-Type: text/html;charset=utf-8\r\n
+        Content-Length:{}\r\n\r\n{}"
+        , contents.as_bytes().len()
+        , contents
+    );
+    println!("{}", response);
+    
+    stream
+        .write_all(response.as_bytes())
+        .await?;
+
+    stream
+        .flush()
+        .await?;
+    
+    Ok(())
 }
 
-impl TcpHandler {
-    /// 处理已建立的 TCP 连接
-    fn handle_tcp_connection(mut stream: TcpStream) {
-        println!("新客户端：{:?}", stream.local_addr());
-
-        //let mut buffer = [0; 1024];
-        let hello_zh = b"\xE4\xBD\xA0\xE5\xA5\xBD\xEF\xBC\x81";
-        stream.write(hello_zh).expect("无法读取 TCP 数据！");
-    }
-}
-
-/// ### 用 Rust 实现一个 HTTP 服务器
-/// - I/O 模型：Linux aio（异步、非阻塞）
-/// - 支持线程池
-/// - Proactor / Reactor 线程模型，二者将封装成模块，可随意调用
-/// 
-/// [参考](https://www.zupzup.org/epoll-with-rust/index.html)
-fn main() -> std::io::Result<()> {
+/// 异步的 HTTP 服务器
+#[tokio::main]
+async fn main()  -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
     let server_addr = args[1].clone();
-    let port: u16 = args[2].clone().parse().expect("端口不合法");
-    println!("IP 地址：{:?} 端口：{:?}", &server_addr, port);
+    let port: u16 = args[2]
+                    .clone()
+                    .parse()
+                    .expect("Illegal port");
+    println!("IP address {} port {}", &server_addr, port);
 
-    let listener = TcpListener::bind((server_addr, port))?;
+    let listener = TcpListener::bind((server_addr, port))
+                                .await?;
     
     // listener 可能有多个连接，迭代 listener 拥有的连接
-    for stream in listener.incoming() {
-        match stream {
-            Ok(stream) => TcpHandler::handle_tcp_connection(stream),
-            Err(e) => eprintln!("无法找到客户端：{}", e),
-        }
+    loop {
+        let (stream, _) = listener
+                                        .accept()
+                                        .await?;
+        
+        tokio::spawn(async move {
+            handle_tcp_connection(stream)
+                .await
+                .expect("Failed to handle the TCP connection");
+        });
     }
-
-    Ok(())
 }

@@ -1,0 +1,4 @@
+[Wed Dec 22 2021 16:39:26 GMT+0800 (China Standard Time)] INFO Requests: 46, requests per second: 396, mean latency: 60.2 ms
+[Wed Dec 22 2021 16:39:26 GMT+0800 (China Standard Time)] INFO Errors: 46, accumulated errors: 46, 100% of total requests
+[Wed Dec 22 2021 16:39:31 GMT+0800 (China Standard Time)] INFO Requests: 1005, requests per second: 195, mean latency: 855.7 ms
+[Wed Dec 22 2021 16:39:31 GMT+0800 (China Standard Time)] INFO Errors: 959, accumulated errors: 1005, 100% of total requests

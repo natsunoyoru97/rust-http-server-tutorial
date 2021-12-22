@@ -1,0 +1,20 @@
+[Wed Dec 22 2021 21:35:37 GMT+0800 (China Standard Time)] INFO Requests: 0, requests per second: 0, mean latency: 0 ms
+[Wed Dec 22 2021 21:35:41 GMT+0800 (China Standard Time)] INFO Requests: 1574, requests per second: 360, mean latency: 2731.6 ms
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO 
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Target URL:          http://127.0.0.1:8080
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Max time (s):        10
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Concurrency level:   1000
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Agent:               none
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO 
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Completed requests:  1905
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Total errors:        0
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Total time:          10.170434278999998 s
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Requests per second: 187
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Mean latency:        2802.5 ms
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO 
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO Percentage of the requests served within a certain time
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO   50%      2830 ms
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO   90%      3514 ms
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO   95%      3693 ms
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO   99%      3935 ms
+[Wed Dec 22 2021 21:35:45 GMT+0800 (China Standard Time)] INFO  100%      6801 ms (longest request)
