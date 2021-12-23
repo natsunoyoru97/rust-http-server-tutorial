@@ -1,2 +1,2 @@
-[Wed Dec 22 2021 10:10:49 GMT+0000 (Coordinated Universal Time)] INFO Requests: 10000, requests per second: 2625, mean latency: 2463.9 ms
-[Wed Dec 22 2021 10:10:49 GMT+0000 (Coordinated Universal Time)] INFO Errors: 10000, accumulated errors: 10000, 100% of total requests
+[Thu Dec 23 2021 13:59:44 GMT+0000 (Coordinated Universal Time)] INFO Requests: 10000, requests per second: 2821, mean latency: 2221 ms
+[Thu Dec 23 2021 13:59:44 GMT+0000 (Coordinated Universal Time)] INFO Errors: 10000, accumulated errors: 10000, 100% of total requests
