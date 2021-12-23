@@ -1,20 +1,20 @@
-[Wed Dec 22 2021 13:53:19 GMT+0000 (Coordinated Universal Time)] INFO Requests: 0, requests per second: 0, mean latency: 0 ms
-[Wed Dec 22 2021 13:53:24 GMT+0000 (Coordinated Universal Time)] INFO Requests: 3907, requests per second: 824, mean latency: 1242.8 ms
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO 
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Target URL:          http://127.0.0.1:8080/
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Max time (s):        10
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Concurrency level:   2000
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Agent:               none
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO 
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Completed requests:  4993
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Total errors:        0
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Total time:          10.286062042 s
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Requests per second: 485
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Mean latency:        2059.5 ms
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO 
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO Percentage of the requests served within a certain time
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO   50%      831 ms
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO   90%      4657 ms
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO   95%      5455 ms
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO   99%      7759 ms
-[Wed Dec 22 2021 13:53:29 GMT+0000 (Coordinated Universal Time)] INFO  100%      7786 ms (longest request)
+[Thu Dec 23 2021 13:29:10 GMT+0000 (Coordinated Universal Time)] INFO Requests: 0, requests per second: 0, mean latency: 0 ms
+[Thu Dec 23 2021 13:29:15 GMT+0000 (Coordinated Universal Time)] INFO Requests: 14983, requests per second: 2989, mean latency: 683.5 ms
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO 
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Target URL:          http://127.0.0.1:8080/
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Max time (s):        10
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Concurrency level:   2000
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Agent:               none
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO 
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Completed requests:  30636
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Total errors:        0
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Total time:          10.000380229000001 s
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Requests per second: 3063
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Mean latency:        625.9 ms
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO 
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO Percentage of the requests served within a certain time
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO   50%      587 ms
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO   90%      780 ms
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO   95%      832 ms
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO   99%      1846 ms
+[Thu Dec 23 2021 13:29:20 GMT+0000 (Coordinated Universal Time)] INFO  100%      2074 ms (longest request)
