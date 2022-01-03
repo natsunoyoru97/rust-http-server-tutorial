@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package abi;
+
+// TODO: 定义客户端的命令请求
+message CommandRequest {
+    oneof request_data {
+
+    }
+}
+
+// TODO: 定义服务端的响应
+message CommandResponse {
+    uint32 status = 1;
+    string message = 2;
+    // TODO: 还有别的
+}
+
+// TODO: 服务定义
+service ClientCli {
+    rpc Shell(CommandRequest) returns (CommandResponse);
+}

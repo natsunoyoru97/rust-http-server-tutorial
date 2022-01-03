@@ -31,7 +31,7 @@ fn main() {
                       .expect("Failed to write");
                 
                 // 接收来自服务器的消息
-                let mut data = vec![0 as u8; 512];
+                let mut data = vec![0 as u8; 1024];
                 match stream.read(&mut data) {
                     Ok(n)=> {
                         if n == 0 {
