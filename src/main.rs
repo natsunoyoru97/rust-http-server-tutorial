@@ -15,6 +15,9 @@ use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader}
 };
 
+mod request;
+use request::{ RequestHeader, FileType };
+
 static CLDR: &str = "\r\n";
 
 #[derive(Parser, Debug)]
@@ -25,58 +28,6 @@ struct Args {
     port: u16,
 }
 
-/// 定义需要处理的文件类。
-/// 
-/// 为不同的文件类型适配不同的读写数据方式
-pub enum FileType<'a> {
-    Html,
-    Json,
-    Css,
-    Js,
-    Image(&'a str),
-    Unknown,
-}
-
-impl<'a> FileType<'_> {
-    /// 初始化文件格式
-    pub fn init_file_type(file_type: &'a str) -> FileType {
-        match file_type {
-            "png" | "jpg" | "ico" | "jpeg" => FileType::Image(file_type),
-            "html" | "htm"                 => FileType::Html,
-            "json"                         => FileType::Json,
-            "css"                          => FileType::Css,
-            "js"                           => FileType::Js,
-            _                              => FileType::Unknown,
-        }
-    }
-    
-
-    /// 获取 Content-Type (MIME Type)
-    pub fn get_content_type(&self) -> &'a str {
-        match &self {
-            FileType::Html          => "text/html",
-            FileType::Image("png")  => "image/png",
-            FileType::Image("jpg")  => "image/jpg",
-            FileType::Image("gif")  => "image/gif",
-            FileType::Image("ico")  => "image/x-icon",
-            FileType::Image("webp") => "image/webp",
-            FileType::Js            => "application/javascript",
-            FileType::Css           => "text/css",
-            FileType::Json          => "application/json",
-            _                       => panic!("No content type available"),
-        }
-    }
-
-    /// 返回 image-rs 的输出格式
-    pub fn get_img_output_fmt(&self) -> image::ImageOutputFormat {
-        match &self {
-            FileType::Image("png") => image::ImageOutputFormat::Png,
-            FileType::Image("ico") => image::ImageOutputFormat::Ico,
-            _                      => panic!("Image format illegal"),
-        }
-    }
-}
-
 /// 解析并处理客户端的 HTTP 请求
 async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), Box<dyn Error>> {
     // TODO: 解析 HTTP Uri: https://docs.rs/http/0.1.18/http/uri/struct.Uri.html
@@ -85,29 +36,19 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
     let mut request = httparse::Request::new(&mut headers);
     let res = request.parse(buffer).unwrap();
 
-    let file_root = "./public";
+    //let file_root = "./public";
 
     if res.is_partial() {
         match request.path {
             Some(path) => {
-                let sub_path = match path {
-                    "/" => "/index.html",
-                    _ => path,
-                };
-                let file_vec = sub_path
-                                        .split('.')
-                                        .collect::<Vec<&str>>();
-                let file_type = FileType::init_file_type(
-                                            file_vec
-                                            .last()
-                                            .unwrap_or(&"")
-                                        );
-                let path = format!("{}{}", file_root, sub_path);
-                println!("{}", path);
+                let req_header = RequestHeader::init_request("./public", path);
+                let path = &req_header.get_full_path();
+                let file_type = &req_header.get_file_type();
 
                 let mut bytes: Vec<u8> = Vec::new();
                 let contents = match file_type {
                     FileType::Html => {
+                        println!("err!");
                         fs::read(path)
                             .await?
                     },
@@ -123,7 +64,7 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
                     _ => bytes,
                 };
                 
-                let response = gen_http_response(contents.as_slice(), file_type);
+                let response = gen_http_response(contents.as_slice(), *file_type);
                 stream
                     .write_all(response.as_slice())
                     .await?;
