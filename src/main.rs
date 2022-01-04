@@ -17,17 +17,69 @@ use tokio::{
 
 static CLDR: &str = "\r\n";
 
-/// 程序运行接受的参数
 #[derive(Parser, Debug)]
-#[clap(about, version = "0.1.0", author = "natsunoyoru97 <natsunoyoru97@outlook.com>")]
+#[clap(about = "A simple Rust HTTP server", version = "0.1.0", author = "natsunoyoru97 <natsunoyoru97@outlook.com>")]
 struct Args {
     ip_addr: String,
     #[clap(default_value_t = 8080)]
     port: u16,
 }
 
+/// 定义需要处理的文件类。
+/// 
+/// 为不同的文件类型适配不同的读写数据方式
+pub enum FileType<'a> {
+    Html,
+    Json,
+    Css,
+    Js,
+    Image(&'a str),
+    Unknown,
+}
+
+impl<'a> FileType<'_> {
+    /// 初始化文件格式
+    pub fn init_file_type(file_type: &'a str) -> FileType {
+        match file_type {
+            "png" | "jpg" | "ico" | "jpeg" => FileType::Image(file_type),
+            "html" | "htm"                 => FileType::Html,
+            "json"                         => FileType::Json,
+            "css"                          => FileType::Css,
+            "js"                           => FileType::Js,
+            _                              => FileType::Unknown,
+        }
+    }
+    
+
+    /// 获取 Content-Type (MIME Type)
+    pub fn get_content_type(&self) -> &'a str {
+        match &self {
+            FileType::Html          => "text/html",
+            FileType::Image("png")  => "image/png",
+            FileType::Image("jpg")  => "image/jpg",
+            FileType::Image("gif")  => "image/gif",
+            FileType::Image("ico")  => "image/x-icon",
+            FileType::Image("webp") => "image/webp",
+            FileType::Js            => "application/javascript",
+            FileType::Css           => "text/css",
+            FileType::Json          => "application/json",
+            _                       => panic!("No content type available"),
+        }
+    }
+
+    /// 返回 image-rs 的输出格式
+    pub fn get_img_output_fmt(&self) -> image::ImageOutputFormat {
+        match &self {
+            FileType::Image("png") => image::ImageOutputFormat::Png,
+            FileType::Image("ico") => image::ImageOutputFormat::Ico,
+            _                      => panic!("Image format illegal"),
+        }
+    }
+}
+
 /// 解析并处理客户端的 HTTP 请求
 async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), Box<dyn Error>> {
+    // TODO: 解析 HTTP Uri: https://docs.rs/http/0.1.18/http/uri/struct.Uri.html
     // 解析客户端发来的 HTTP 请求
     let mut headers = [httparse::EMPTY_HEADER; 16];
     let mut request = httparse::Request::new(&mut headers);
@@ -45,27 +97,27 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
                 let file_vec = sub_path
                                         .split('.')
                                         .collect::<Vec<&str>>();
-                let file_type = file_vec
-                                        .last()
-                                        .unwrap_or(&"");
+                let file_type = FileType::init_file_type(
+                                            file_vec
+                                            .last()
+                                            .unwrap_or(&"")
+                                        );
                 let path = format!("{}{}", file_root, sub_path);
                 println!("{}", path);
 
-                // TODO: 针对不同 content 类型做不同的处理
-                // 目前需要支持 png 格式以外的图片和 JSON
-                println!("{}", *file_type);
                 let mut bytes: Vec<u8> = Vec::new();
-                let contents = match *file_type {
-                    "html" => {
+                let contents = match file_type {
+                    FileType::Html => {
                         fs::read(path)
                             .await?
                     },
-                    "png" => {
+                    FileType::Image(_) => {
                         let img = ImageReader::open(path)?
-                                                .decode()?;
+                                .decode()?;
                         let scaled = img.resize(350, 200, FilterType::Triangle);
-                        scaled.write_to(&mut bytes, image::ImageOutputFormat::Png)?;
-                        
+                        // TODO: 怎么支持异步读写操作？
+                        scaled.write_to(&mut bytes, file_type.get_img_output_fmt())?;
+
                         bytes
                     },
                     _ => bytes,
@@ -88,28 +140,13 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
     Ok(())
 }
 
-/// 获取 Content-Type (MIME Type)
-fn get_content_type<'a>(file_type: &'a str) -> &'a str {
-    match file_type {
-        "html" | "htm" => "text/html",
-        "png" => "image/png",
-        "jpg" => "image/jpg",
-        "gif" => "image/gif",
-        "ico" => "image/x-icon",
-        "webp" => "image/webp",
-        "js" => "application/javascript",
-        "css" => "text/css",
-        "json" => "application/json",
-        _ => "",
-    }
-}
-
 /// 生成 HTTP Response
-fn gen_http_response(contents: &[u8], file_type: &str) -> Vec<u8> {
+fn gen_http_response(contents: &[u8], file_type: FileType) -> Vec<u8> {
     let (status_code, text) = ("200", "OK");
     let status = format!("HTTP/1.1 {0} {1}{2}", status_code, text, CLDR);
     let server_name = format!("Server: Rust{0}", CLDR);
-    let content_type = format!("Content-Type: {0};", get_content_type(file_type));
+    let content_type = format!("Content-Type: {0};", file_type.get_content_type());
+    println!("{}",  file_type.get_content_type());
     //let char_set = format!("charset=utf-8{0}", CLDR);
     let content_length = format!("Content-Length:{0}{1}\n", contents.len(), CLDR);
 
@@ -125,7 +162,9 @@ fn gen_http_response(contents: &[u8], file_type: &str) -> Vec<u8> {
 /// 处理已建立的 TCP 连接
 async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     let mut message = String::new();
-    BufReader::new(&mut stream).read_line(&mut message).await?;
+    BufReader::new(&mut stream)
+                .read_line(&mut message)
+                .await?;
     //println!("{}", message);
     
     read_http_request(stream, &message.as_bytes()).await?;
@@ -133,9 +172,24 @@ async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Erro
     Ok(())
 }
 
+#[macro_use]
+extern crate slog;
+extern crate slog_term;
+extern crate slog_async;
+
+use slog::Drain;
+
 /// 异步的 HTTP 服务器
 #[tokio::main]
 async fn main()  -> Result<(), Box<dyn Error>> {
+    // 输出日志到终端
+    let decorator = slog_term::TermDecorator::new().build();
+    let drain = slog_term::FullFormat::new(decorator).build().fuse();
+    let drain = slog_async::Async::new(drain).build().fuse();
+
+    let _log = slog::Logger::root(drain, o!());
+
+    // 读取命令行参数
     let args = Args::parse();
     let (server_addr, port) = (&args.ip_addr, args.port);
     println!("IP address {0} port {1}", &server_addr, port);
