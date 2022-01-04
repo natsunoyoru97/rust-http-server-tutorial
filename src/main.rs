@@ -1,14 +1,30 @@
-use image::io::Reader as ImageReader;
-
-use std::env;
-use std::error::Error;
-use std::str;
-
-use tokio::fs;
-use tokio::net::{TcpListener, TcpStream};
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+//! 使用 tokio 运行时搭建的异步 HTTP 服务器
+//! tokio 运行时已经封装好了线程池、executor 和 poll/epoll
+use clap::Parser;
+use image::{
+    imageops::FilterType,
+    io::Reader as ImageReader
+};
+use std::{
+    error::Error,
+    str
+};
+use tokio::{
+    fs,
+    net::{TcpListener, TcpStream},
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader}
+};
 
 static CLDR: &str = "\r\n";
+
+/// 程序运行接受的参数
+#[derive(Parser, Debug)]
+#[clap(about, version = "0.1.0", author = "natsunoyoru97 <natsunoyoru97@outlook.com>")]
+struct Args {
+    ip_addr: String,
+    #[clap(default_value_t = 8080)]
+    port: u16,
+}
 
 /// 解析并处理客户端的 HTTP 请求
 async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), Box<dyn Error>> {
@@ -32,8 +48,8 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
                 let file_type = file_vec
                                         .last()
                                         .unwrap_or(&"");
-
-                println!("{}", format!("{},{}", file_root, sub_path));
+                let path = format!("{}{}", file_root, sub_path);
+                println!("{}", path);
 
                 // TODO: 针对不同 content 类型做不同的处理
                 // 目前需要支持 png 格式以外的图片和 JSON
@@ -41,13 +57,14 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
                 let mut bytes: Vec<u8> = Vec::new();
                 let contents = match *file_type {
                     "html" => {
-                        fs::read(format!("{0}{1}", file_root, sub_path))
-                                            .await?
+                        fs::read(path)
+                            .await?
                     },
                     "png" => {
-                        let img = ImageReader::open(format!("{0}{1}", file_root, sub_path))?
+                        let img = ImageReader::open(path)?
                                                 .decode()?;
-                        img.write_to(&mut bytes, image::ImageOutputFormat::Png)?;
+                        let scaled = img.resize(350, 200, FilterType::Triangle);
+                        scaled.write_to(&mut bytes, image::ImageOutputFormat::Png)?;
                         
                         bytes
                     },
@@ -71,12 +88,18 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
     Ok(())
 }
 
-/// 获取 Content-Type
+/// 获取 Content-Type (MIME Type)
 fn get_content_type<'a>(file_type: &'a str) -> &'a str {
-    // TODO: 添加更多文件格式
     match file_type {
-        "html" => "text/html",
+        "html" | "htm" => "text/html",
         "png" => "image/png",
+        "jpg" => "image/jpg",
+        "gif" => "image/gif",
+        "ico" => "image/x-icon",
+        "webp" => "image/webp",
+        "js" => "application/javascript",
+        "css" => "text/css",
+        "json" => "application/json",
         _ => "",
     }
 }
@@ -94,7 +117,7 @@ fn gen_http_response(contents: &[u8], file_type: &str) -> Vec<u8> {
         "{0}{1}{2}{3}"
         , status, server_name, content_type, content_length
     );
-    println!("{}", response);
+    println!("{0}", response);
 
     [response.as_bytes(), contents].concat()
 }
@@ -103,7 +126,7 @@ fn gen_http_response(contents: &[u8], file_type: &str) -> Vec<u8> {
 async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     let mut message = String::new();
     BufReader::new(&mut stream).read_line(&mut message).await?;
-    println!("{}", message);
+    //println!("{}", message);
     
     read_http_request(stream, &message.as_bytes()).await?;
     
@@ -113,17 +136,12 @@ async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Erro
 /// 异步的 HTTP 服务器
 #[tokio::main]
 async fn main()  -> Result<(), Box<dyn Error>> {
-    let args: Vec<String> = env::args().collect();
-
-    let server_addr = &args[1];
-    let port: u16 = args[2]
-                    .parse()
-                    .expect("Illegal port");
-    println!("IP address {} port {}", &server_addr, port);
+    let args = Args::parse();
+    let (server_addr, port) = (&args.ip_addr, args.port);
+    println!("IP address {0} port {1}", &server_addr, port);
 
     let listener = TcpListener::bind(((*server_addr).clone(), port))
                                 .await?;
-    
     // listener 可能有多个连接，迭代 listener 拥有的连接
     loop {
         let (stream, _) = listener

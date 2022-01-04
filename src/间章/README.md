@@ -24,6 +24,8 @@
 
 [Reducing tail latencies with automatic cooperative task yielding](https://tokio.rs/blog/2020-04-preemption)
 
+[Introduction to gRPC in Rust](https://romankudryashov.com/blog/2021/04/grpc-rust/)
+
 
 
 ### 参考
