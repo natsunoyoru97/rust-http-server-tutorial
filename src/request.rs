@@ -1,6 +1,6 @@
 
 
-/// 封装请求头
+/// 请求头
 #[derive(Debug, Clone)]
 pub struct RequestHeader<'a> {
     root: &'a str,
@@ -9,8 +9,9 @@ pub struct RequestHeader<'a> {
 }
 
 impl<'a, 'b> RequestHeader<'b> {
+    /// 初始化 RequestHeader 类
     pub fn init_request(root_str: &'b str, path_str: &'b str) -> RequestHeader<'b> {
-         let subpath_tmp = 
+        let subpath_tmp = 
             match path_str {
                 "/" => "/index.html",
                 _ => path_str,
@@ -18,8 +19,6 @@ impl<'a, 'b> RequestHeader<'b> {
         let file_vec = &subpath_tmp
                         .split('.')
                         .collect::<Vec<&str>>();
-       
-        println!("{}", subpath_tmp);
 
         RequestHeader {
             root: root_str,
@@ -32,10 +31,12 @@ impl<'a, 'b> RequestHeader<'b> {
         }
     }
 
+    /// 获取 RequestHeader 的 file_type 成员
     pub fn get_file_type(&self) -> FileType {
         self.file_type
     }
 
+    /// 获取 RequestHeader 的文件全路径
     pub fn get_full_path(&self) -> String {
         format!("{}{}", self.root, self.subpath)
     }

@@ -36,8 +36,6 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
     let mut request = httparse::Request::new(&mut headers);
     let res = request.parse(buffer).unwrap();
 
-    //let file_root = "./public";
-
     if res.is_partial() {
         match request.path {
             Some(path) => {
@@ -106,8 +104,6 @@ async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Erro
     BufReader::new(&mut stream)
                 .read_line(&mut message)
                 .await?;
-    //println!("{}", message);
-    
     read_http_request(stream, &message.as_bytes()).await?;
     
     Ok(())
@@ -142,7 +138,6 @@ async fn main()  -> Result<(), Box<dyn Error>> {
         let (stream, _) = listener
                                 .accept()
                                 .await?;
-        
         tokio::spawn(async move {
             handle_tcp_connection(stream)
                 .await
