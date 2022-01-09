@@ -40,6 +40,17 @@
 
 - simple_http_server
 
+### TODOs
+
+- 日志系统：
+  - 支持环境参数和 toml 设置日志信息
+  - 支持输出日志文件
+
+- HTTP 服务器框架
+  - 支持处理图片和 html 以外的 MIME
+  - 支持 K/V 存储和获取
+  - 完善 CLI
+
 
 ### 为什么用Rust？
 

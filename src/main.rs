@@ -5,6 +5,8 @@ use image::{
     imageops::FilterType,
     io::Reader as ImageReader
 };
+use slog::{debug, info, trace, Logger};
+use sloggers::{Config, LoggerConfig};
 use std::{
     error::Error,
     str
@@ -29,7 +31,8 @@ struct Args {
 }
 
 /// 解析并处理客户端的 HTTP 请求
-async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), Box<dyn Error>> {
+async fn read_http_request(mut stream: TcpStream, buffer: &[u8], logger: &Logger) -> Result<(), Box<dyn Error>> {
+    trace!(logger, "-> async fn read_http_request");
     // TODO: 解析 HTTP Uri: https://docs.rs/http/0.1.18/http/uri/struct.Uri.html
     // 解析客户端发来的 HTTP 请求
     let mut headers = [httparse::EMPTY_HEADER; 16];
@@ -41,14 +44,14 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
             Some(path) => {
                 let req_header = RequestHeader::init_request("./public", path);
                 let path = &req_header.get_full_path();
+                debug!(logger, "{:?}", path);
                 let file_type = &req_header.get_file_type();
+                debug!(logger, "{:?}", file_type);
 
                 let mut bytes: Vec<u8> = Vec::new();
                 let contents = match file_type {
                     FileType::Html => {
-                        println!("err!");
-                        fs::read(path)
-                            .await?
+                        fs::read(path).await?
                     },
                     FileType::Image(_) => {
                         let img = ImageReader::open(path)?
@@ -62,7 +65,8 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
                     _ => bytes,
                 };
                 
-                let response = gen_http_response(contents.as_slice(), *file_type);
+                debug!(logger, "Ready to generate HTTP response");
+                let response = gen_http_response(contents.as_slice(), *file_type, logger);
                 stream
                     .write_all(response.as_slice())
                     .await?;
@@ -80,12 +84,12 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8]) -> Result<(), B
 }
 
 /// 生成 HTTP Response
-fn gen_http_response(contents: &[u8], file_type: FileType) -> Vec<u8> {
+fn gen_http_response(contents: &[u8], file_type: FileType, logger: &Logger) -> Vec<u8> {
+    trace!(logger, "-> fn gen_http_response");
     let (status_code, text) = ("200", "OK");
     let status = format!("HTTP/1.1 {0} {1}{2}", status_code, text, CLDR);
     let server_name = format!("Server: Rust{0}", CLDR);
     let content_type = format!("Content-Type: {0};", file_type.get_content_type());
-    println!("{}",  file_type.get_content_type());
     //let char_set = format!("charset=utf-8{0}", CLDR);
     let content_length = format!("Content-Length:{0}{1}\n", contents.len(), CLDR);
 
@@ -93,43 +97,50 @@ fn gen_http_response(contents: &[u8], file_type: FileType) -> Vec<u8> {
         "{0}{1}{2}{3}"
         , status, server_name, content_type, content_length
     );
-    println!("{0}", response);
+    info!(logger, "{}", format!("{0}", response));
 
     [response.as_bytes(), contents].concat()
 }
 
 /// 处理已建立的 TCP 连接
 async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
+    // 输出异步日志到终端
+    // TODO: 有没有办法既能保留 move 操作，又不用重复初始化 logger？
+    let config: LoggerConfig = serdeconv::from_toml_str(r#"
+        type = "terminal"
+        level = "debug"
+        destination = "stderr"
+        "#)
+        .expect("toml config error");
+    let logger = config.build_logger().expect("Cannot generate logger");
+    trace!(logger, "-> async fn handle_tcp_connection");
+
     let mut message = String::new();
     BufReader::new(&mut stream)
                 .read_line(&mut message)
                 .await?;
-    read_http_request(stream, &message.as_bytes()).await?;
+    read_http_request(stream, &message.as_bytes(), &logger).await?;
     
     Ok(())
 }
 
-#[macro_use]
-extern crate slog;
-extern crate slog_term;
-extern crate slog_async;
-
-use slog::Drain;
-
 /// 异步的 HTTP 服务器
 #[tokio::main]
 async fn main()  -> Result<(), Box<dyn Error>> {
-    // 输出日志到终端
-    let decorator = slog_term::TermDecorator::new().build();
-    let drain = slog_term::FullFormat::new(decorator).build().fuse();
-    let drain = slog_async::Async::new(drain).build().fuse();
-
-    let _log = slog::Logger::root(drain, o!());
+    // 输出异步日志到终端
+    let config: LoggerConfig = serdeconv::from_toml_str(r#"
+        type = "terminal"
+        level = "trace"
+        destination = "stderr"
+        "#)
+        .expect("toml config error");
+    let logger = config.build_logger().expect("Cannot generate logger");
+    info!(logger, "Logging ready!");
 
     // 读取命令行参数
     let args = Args::parse();
     let (server_addr, port) = (&args.ip_addr, args.port);
-    println!("IP address {0} port {1}", &server_addr, port);
+    info!(logger, "{}", format!("Start with IP address {0} port {1}", &server_addr, port));
 
     let listener = TcpListener::bind(((*server_addr).clone(), port))
                                 .await?;
