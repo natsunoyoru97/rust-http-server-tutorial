@@ -19,7 +19,7 @@
 
 ```bash
 cd rust-http-server-tutorial
-cargo run <ip-addr> [port]
+cargo run -- <ip-addr> [port]
 ```
 
 默认端口是8080。
