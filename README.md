@@ -1,8 +1,8 @@
-# 用Rust实现一个HTTP服务器
+# 用Rust实现一个简单异步HTTP服务器
 
-**项目目前尚未启动，网络编程部分和HTTP服务器部分均未完成！！**
+**目前网络编程部分和教程尚未完成！！**主程序的异步HTTP服务器可以编译运行，目前支持GET、一些常用的MIME格式以及日志。
 
-~~目前上传到github只是想警示一下喜欢鸽的自己，**你还有事要做赶紧干正事**~~
+~~上传到github只是想警示一下喜欢鸽的自己，**你还有事要做赶紧干正事**~~
 
 这篇教程是现学现卖，有什么知识理念上的错误和不足欢迎提出PR！
 
@@ -15,12 +15,23 @@
   mdbook serve
 ```
 
+- 本地运行主程序
+
+```bash
+cd rust-http-server-tutorial
+cargo run <ip-addr> [port]
+```
+
+默认端口是8080。
+
 - 本地运行示例代码
 
 ```bash
   cd rust-http-server-tutorial
   cargo run --example <示例代码名称> -- [args..]
 ```
+
+
 
 ### 目前支持的示例
 
@@ -32,6 +43,8 @@
 
 - simple_http_server
 
+
+
 ### 目前可以参考的性能测试结果
 
 所有性能测试的结果均在``./loadtest_log``文件夹下。
@@ -39,17 +52,25 @@
 目前只有 Alma Linux 服务器上使用 npm 插件 loadtest 进行压力测试的结果（日后更新具体环境信息）。
 
 - simple_http_server
+- async_http_server
+
+
 
 ### TODOs
+
+- 支持POST
+- 支持404等其它HTTP状态码
+- 处理更多异常情况
 
 - 日志系统：
   - 支持环境参数和 toml 设置日志信息
   - 支持输出日志文件
 
 - HTTP 服务器框架
-  - 支持处理图片和 html 以外的 MIME
   - 支持 K/V 存储和获取
   - 完善 CLI
+
+  
 
 
 ### 为什么用Rust？

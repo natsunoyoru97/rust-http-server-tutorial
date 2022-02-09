@@ -53,6 +53,7 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8], logger: &Logger
                 debug!(logger, "{:?}", file_type);
 
                 let mut bytes: Vec<u8> = Vec::new();
+                // FIXME: 目前不支持读取中文文件名
                 let contents = match file_type {
                     FileType::Html | FileType::Css | FileType::Js => {
                         fs::read(path).await?
@@ -60,9 +61,9 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8], logger: &Logger
                     FileType::Image(_) => {
                         let img = ImageReader::open(path)?
                                 .decode()?;
-                        let scaled = img.resize(350, 200, FilterType::Triangle);
+                        //let scaled = img.resize(350, 200, FilterType::Triangle);
                         // TODO: 怎么支持异步读写操作？
-                        scaled.write_to(&mut bytes, file_type.get_img_output_fmt())?;
+                        img.write_to(&mut bytes, file_type.get_img_output_fmt())?;
 
                         bytes
                     },

@@ -38,7 +38,7 @@ impl<'a, 'b> RequestHeader<'b> {
 
     /// 获取 RequestHeader 的文件全路径
     pub fn get_full_path(&self) -> String {
-        format!("{}{}", self.root, self.subpath)
+        format!("{0}{1}", self.root, self.subpath)
     }
 }
 
@@ -60,7 +60,7 @@ impl<'a> FileType<'_> {
     pub fn init_file_type(file_type: &'a str) -> FileType {
         println!("init_file_type: {0}", file_type);
         match file_type {
-            "png" | "jpg" | "ico" | "jpeg" => FileType::Image(file_type),
+            "png" | "jpg" | "ico" | "jpeg" | "bmp" | "webp" | "gif" => FileType::Image(file_type),
             "html" | "htm"                 => FileType::Html,
             "json"                         => FileType::Json,
             "css"                          => FileType::Css,
@@ -74,8 +74,9 @@ impl<'a> FileType<'_> {
         match &self {
             FileType::Html          => "text/html",
             FileType::Image("png")  => "image/png",
-            FileType::Image("jpg")  => "image/jpg",
+            FileType::Image("jpg") | FileType::Image("jpeg")  => "image/jpeg",
             FileType::Image("gif")  => "image/gif",
+            FileType::Image("bmp")  => "image/bmp",
             FileType::Image("ico")  => "image/x-icon",
             FileType::Image("webp") => "image/webp",
             FileType::Js            => "application/javascript",
@@ -90,6 +91,7 @@ impl<'a> FileType<'_> {
         match &self {
             FileType::Image("png") => image::ImageOutputFormat::Png,
             FileType::Image("ico") => image::ImageOutputFormat::Ico,
+            FileType::Image("jpg") | FileType::Image("jpeg") => image::ImageOutputFormat::Jpeg(90),
             _                      => panic!("Image format illegal"),
         }
     }
