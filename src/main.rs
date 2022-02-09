@@ -23,7 +23,11 @@ use request::{ RequestHeader, FileType };
 static CLDR: &str = "\r\n";
 
 #[derive(Parser, Debug)]
-#[clap(about = "A simple Rust HTTP server", version = "0.1.0", author = "natsunoyoru97 <natsunoyoru97@outlook.com>")]
+#[clap(
+    version = env!("CARGO_PKG_VERSION"),
+    author = env!("CARGO_PKG_AUTHORS"),
+    about = env!("CARGO_PKG_DESCRIPTION")
+)]
 struct Args {
     ip_addr: String,
     #[clap(default_value_t = 8080)]
@@ -50,7 +54,7 @@ async fn read_http_request(mut stream: TcpStream, buffer: &[u8], logger: &Logger
 
                 let mut bytes: Vec<u8> = Vec::new();
                 let contents = match file_type {
-                    FileType::Html => {
+                    FileType::Html | FileType::Css | FileType::Js => {
                         fs::read(path).await?
                     },
                     FileType::Image(_) => {

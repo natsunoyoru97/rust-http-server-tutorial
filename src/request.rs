@@ -58,6 +58,7 @@ pub enum FileType<'a> {
 impl<'a> FileType<'_> {
     /// 初始化文件格式
     pub fn init_file_type(file_type: &'a str) -> FileType {
+        println!("init_file_type: {0}", file_type);
         match file_type {
             "png" | "jpg" | "ico" | "jpeg" => FileType::Image(file_type),
             "html" | "htm"                 => FileType::Html,
