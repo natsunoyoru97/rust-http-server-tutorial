@@ -2,7 +2,7 @@
 //! tokio 运行时已经封装好了线程池、executor 和 poll/epoll
 use clap::Parser;
 use image::{
-    imageops::FilterType,
+    //imageops::FilterType,
     io::Reader as ImageReader
 };
 use slog::{debug, info, trace, Logger};
@@ -115,9 +115,8 @@ async fn handle_tcp_connection(mut stream: TcpStream) -> Result<(), Box<dyn Erro
         type = "terminal"
         level = "debug"
         destination = "stderr"
-        "#)
-        .expect("toml config error");
-    let logger = config.build_logger().expect("Cannot generate logger");
+        "#)?;
+    let logger = config.build_logger()?;
     trace!(logger, "-> async fn handle_tcp_connection");
 
     let mut message = String::new();
@@ -137,9 +136,8 @@ async fn main()  -> Result<(), Box<dyn Error>> {
         type = "terminal"
         level = "trace"
         destination = "stderr"
-        "#)
-        .expect("toml config error");
-    let logger = config.build_logger().expect("Cannot generate logger");
+        "#)?;
+    let logger = config.build_logger()?;
     info!(logger, "Logging ready!");
 
     // 读取命令行参数
